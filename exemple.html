@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Generate table by object array Test Suite</title>
+  <!-- Load local jQuery. -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <!-- Load local QUnit. -->
+  <link rel="stylesheet" href="bower_components/jquery-ui/themes/flick/jquery-ui.css" media="screen">
+  <script src="bower_components/jquery-ui/ui/jquery-ui.custom.js"></script>
+  <!-- Load local lib and tests. -->
+  <script type="text/javascript" src="src/jquery-simpletable.js"></script>
+</head>
+<body>
+    <table id="simpleTable"></table>
+    <script>
+     $(function(){
+         $('#simpleTable').simpleTable({
+             'columns' : [
+             {'title': 'Code', 'width' : 20},
+             {'title': 'Name', 'width' : 200},
+             {'title': 'Tel',  'width' : 120},
+             {'title': 'Site', 'width' : 60, 'conditions' : [
+               { 'expression' : 'value <= 20', 'cell' : 'color : red' },
+               { 'expression' : 'value > 20 && value < 30', 'cell' : 'background: yellow' },
+               { 'expression' : 'value >= 30', 'cell' : 'color : green' }
+             ]},
+             ],
+             'data' : [
+{'Code' : 1 , 'Name' : 'Maria das Dores', 'Tel': '0000-0000', 'Site': Math.round(Math.random() * 50)},
+{'Code' : 2 , 'Name' : 'Joao Soares', 'Tel': '0000-0000', 'Site'    : Math.round(Math.random() * 50)},
+{'Code' : 3 , 'Name' : 'Silvia da Silva', 'Tel': '0000-0000', 'Site': Math.round(Math.random() * 50)},
+{'Code' : 4 , 'Name' : 'Paula Souza', 'Tel': '0000-0000', 'Site'    : Math.round(Math.random() * 50)}
+             ],
+             'keyField' : 'Code'
+           });
+       
+       });
+    </script>
+</body>
+</html>
