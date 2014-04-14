@@ -92,7 +92,7 @@ var __x = eval;
           }
           var row = self.body.find('tr[id=' + id + ']');
           if(!row || row.length < 1){
-            row = self._createRow(fields.length, id);
+            row = self._createRow(self.options.columns.length, id);
           }
           var columnIndex = 0;
           var $columns = row.find('td');
@@ -101,25 +101,29 @@ var __x = eval;
             if(!column){
               continue;
             }
-            var value = self._buildCellHtml(obj, column);
+            var value = obj[column.field];
             var localexpression = 'var value="' + value + '"\n';
             var cellElement = $columns.get(columnIndex++);
             if(column.conditions){
               for(var f in column.conditions){
-                if(__x(localexpression + column.conditions[f].expression)){
-                  var cellCss = column.conditions[f].cell;
-                  var parentCss = column.conditions[f].parent;
-                  if(cellCss){
-                    cellElement.style.cssText = cellCss;
-                  }
-                  if(parentCss){
-                    row.get(0).style.cssText = parentCss;
-                  }
-                  break;
-                }// if expressions
+                try{
+                  if(__x(localexpression + column.conditions[f].expression)){
+                    var cellCss = column.conditions[f].cell;
+                    var parentCss = column.conditions[f].parent;
+                    if(cellCss){
+                      cellElement.style.cssText = cellCss;
+                    }
+                    if(parentCss){
+                      row.get(0).style.cssText = parentCss;
+                    }
+                    break;
+                  }// if expressions
+                }catch(ex){
+
+                }
               }// for conditions
             }// if
-            cellElement.innerHTML = value;
+            cellElement.innerHTML = self._buildCellHtml(obj, column);
           }// for
         },
       refresh : function(){
