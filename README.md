@@ -7,9 +7,8 @@ Generate html table by jabascript object array
 ## Getting Started
 
 Download the [production version][min] or the [development version][max].
-
-[min]: https://raw.github.com/edgardleal/jquery-jquery-simpletable/master/dist/jquery.jquery-simpletable.min.js
-[max]: https://raw.github.com/edgardleal/jquery-jquery-simpletable/master/dist/jquery.jquery-simpletable.js
+[min]: https://raw.githubusercontent.com/edgardleal/jquery-simpleTable/master/dist/jquery.jquery-simpletable.min.js
+[max]: https://raw.githubusercontent.com/edgardleal/jquery-simpletable/master/dist/jquery.jquery-simpletable.js
 
 In your web page:
 
