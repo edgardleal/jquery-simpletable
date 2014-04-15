@@ -10,32 +10,80 @@
   <script src="bower_components/jquery-ui/ui/jquery-ui.custom.js"></script>
   <!-- Load local lib and tests. -->
   <script type="text/javascript" src="src/jquery-simpletable.js"></script>
+  <style>
+     .sphere {
+        width : 10px;
+        height: 10px;
+        border-radius : 10px;
+        display : block;
+     }
+     .ok{
+       background-color : green;
+     }
+     .error {
+        background-color : red;
+     }
+  </style>
 </head>
 <body>
     <table id="simpleTable"></table>
     <script>
+     window.onDomReady = function(){
+         alert('Don was ready');
+       };
      $(function(){
          $('#simpleTable').simpleTable({
              'columns' : [
              {'title': 'Code', 'width' : 20},
              {'title': 'Name', 'width' : 200},
              {'title': 'Tel',  'width' : 120},
-             {'title': 'Site', 'width' : 60, 'conditions' : [
+             {'title': 'Value','field': 'value', 'width' : 60, 'conditions' : [
                { 'expression' : 'value <= 20', 'cell' : 'color : red' },
                { 'expression' : 'value > 20 && value < 30', 'cell' : 'background: yellow' },
                { 'expression' : 'value >= 30', 'cell' : 'color : green' }
              ]},
+             {'title' : 'Status', 'field' : '','mapFunction' : function(obj, column){
+                 var c = 'error';
+                 if(parseInt(obj.value) > 20)
+                    c = 'ok';
+                   return '<span class="sphere ' + c + '"></span>';
+               } }
              ],
              'data' : [
-{'Code' : 1 , 'Name' : 'Maria das Dores', 'Tel': '0000-0000', 'Site': Math.round(Math.random() * 50)},
-{'Code' : 2 , 'Name' : 'Joao Soares', 'Tel': '0000-0000', 'Site'    : Math.round(Math.random() * 50)},
-{'Code' : 3 , 'Name' : 'Silvia da Silva', 'Tel': '0000-0000', 'Site': Math.round(Math.random() * 50)},
-{'Code' : 4 , 'Name' : 'Paula Souza', 'Tel': '0000-0000', 'Site'    : Math.round(Math.random() * 50)}
+{'Code' : 1 , 'Name' : 'Maria das Dores', 'Tel': '0000-0000', 'value': Math.round(Math.random() * 50)},
+{'Code' : 2 , 'Name' : 'Joao Soares', 'Tel': '0000-0000', 'value'    : Math.round(Math.random() * 50)},
+{'Code' : 3 , 'Name' : 'Silvia da Silva', 'Tel': '0000-0000', 'value': Math.round(Math.random() * 50)},
+{'Code' : 4 , 'Name' : 'Paula Souza', 'Tel': '0000-0000', 'value'    : Math.round(Math.random() * 50)}
              ],
              'keyField' : 'Code'
            });
        
        });
+
+       var data = [
+{'Code' : 1 , 'Name' : 'Maria das Dores', 'Tel': '0000-0000', 'value': 30 },
+{'Code' : 2 , 'Name' : 'Joao Soares', 'Tel': '0000-0000', 'value'    : 30 },
+{'Code' : 3 , 'Name' : 'Silvia da Silva', 'Tel': '0000-0000', 'value': 30 },
+{'Code' : 4 , 'Name' : 'Paula Souza', 'Tel': '0000-0000', 'value'    : 30 }
+           ];
+
+    function change(index){
+       var change = Math.round(Math.random());
+       var base = data[index].value;
+       if(change)
+        data[index].value = base + (Math.round(Math.random() * 10) - 5);
+    }
+
+     setInterval(function(){
+         change(0); 
+         change(1);  
+         change(2);  
+         change(3);  
+
+         $('#simpleTable').simpleTable('option', 'data', data)
+           .simpleTable('refresh');
+       
+       },3000);
     </script>
 </body>
 </html>

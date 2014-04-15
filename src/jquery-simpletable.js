@@ -3,7 +3,7 @@
  *
  * Exemple of full column configuration:
  * [{'title' : 'Status', 'field' : 'status', 'width': 100,
- *  'mapFunction' : function(text){ return text; },
+ *  'mapFunction' : function(obj, column){ return obj[column.field]; },
  *  'conditions' : [{ 'expression' : 'value > 0' , 'cell' : '',
  *  'parent' : 'color : green'},
  *  {'expression' : 'value <=0', 'cell' : 'color : red', 'parent' : '' }]
@@ -76,10 +76,19 @@ var __x = eval;
             });
           return $row;
         },
+      checkCondition : function(value, expression){
+            var localexpression = 'var value="' + value + '"\n';
+            localexpression += expression;
+            try{
+              return __x(localexpression);
+            }catch(ex){
+              
+            }
+        },
       _buildCellHtml : function(obj, column){
           var result = obj[column.field];
-          if(typeof column.mapFunction && column.mapFunction === 'function'){
-            result = column.mapFunction.call(result);
+          if(column.mapFunction && typeof column.mapFunction === 'function'){
+            result = column.mapFunction.call(this, obj, column);
           }
           return result;
         },
@@ -96,8 +105,8 @@ var __x = eval;
           }
           var columnIndex = 0;
           var $columns = row.find('td');
-          for(var i in fields){
-            var column = self._findColumn(fields[i]);
+          for(var i in self.options.columns){
+            var column = self.options.columns[i];
             if(!column){
               continue;
             }
@@ -153,7 +162,6 @@ var __x = eval;
           this.refresh();
         }
    });
-    
 
   $.expr[':'].awesome = function (elem) {
     // Is this element awesome?
