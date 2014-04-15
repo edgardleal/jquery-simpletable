@@ -2,7 +2,7 @@
 
 Generate html table by jabascript object array
 
-[![Build Status](https://travis-ci.org/edgardleal/jquery-simpleTable.svg?branch=master)](https://travis-ci.org/edgardleal/jquery-simpleTable)
+[![Build Status](https://travis-ci.org/edgardleal/jquery-simpletable.svg?branch=master)](https://travis-ci.org/edgardleal/jquery-simpleTable)
 [![Code Climate](https://codeclimate.com/github/edgardleal/jquery-simpletable.png)](https://codeclimate.com/github/edgardleal/jquery-simpletable)
 
 
