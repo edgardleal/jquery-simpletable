@@ -1,4 +1,4 @@
-/*! jquery-simpletable - v0.0.1 - 2014-04-14
+/*! jquery-simpletable - v0.0.1 - 2014-04-16
 * https://github.com/edgardleal/jquery-simpletable
 * Copyright (c) 2014 Edgard Leal; Licensed MIT */
 var __x = eval;
@@ -8,6 +8,7 @@ var __x = eval;
         keyField : null,
         data : void 0,
         url : void 0,
+        editable : false,
         columns : [],
         table : null,
         border : 1
@@ -42,6 +43,15 @@ var __x = eval;
           }
         }
       },
+      save : function($row){
+        var self = this;
+        if(self.options.url){
+          $.post({
+              url : self.options.url,
+              data : self._serializeRow($row)
+            });
+        }
+      },
       /**
        * Create a table row with number of cols passed 
        * and insert the row in table body
@@ -49,8 +59,9 @@ var __x = eval;
       _createRow : function(cols, id){
           var self = this;
           var html = '<tr id="' + id + '">';
+          var parameters = self.options.editable?'contenteditable="true"':'';
           for(var i = 1 ; i <= cols; i++){
-            html += '<td class="ui-widget-content"></td>';
+            html += '<td ' + parameters + ' class="ui-widget-content"></td>';
           }
           var $row = $(html + '</tr>');
           self.body.append($row);
@@ -63,18 +74,34 @@ var __x = eval;
             }).click(function(){
               $(this).children("td").toggleClass("ui-state-highlight");
             });
+            if(self.options.autosave){
+              $row.find('td').change(function(){
+                  $row.modified = true;
+                  if(self.options.autosave){
+                    self.save($row);
+                  }
+                });
+            }
           return $row;
         },
-      _buildCellHtml : function(obj, column){
+      checkCondition : function(value, expression){
+            var localexpression = 'var value="' + value + '"\n';
+            localexpression += expression;
+            try{
+              return __x(localexpression);
+            }catch(ex){
+              
+            }
+        },
+      _buildCellHtml : function(obj, column, $row, cellElement){
           var result = obj[column.field];
-          if(typeof column.mapFunction && column.mapFunction === 'function'){
-            result = column.mapFunction.call(result);
+          if(column.mapFunction && typeof column.mapFunction === 'function'){
+            result = column.mapFunction.call(this, obj, column, $row, cellElement);
           }
           return result;
         },
       _refreshRow : function(obj){
           var self = this;
-          var fields = Object.keys(obj);
           var id = obj[self.options.keyField];
           if(!id){
             throw 'keyField not pased';
@@ -85,8 +112,8 @@ var __x = eval;
           }
           var columnIndex = 0;
           var $columns = row.find('td');
-          for(var i in fields){
-            var column = self._findColumn(fields[i]);
+          for(var i in self.options.columns){
+            var column = self.options.columns[i];
             if(!column){
               continue;
             }
@@ -112,7 +139,7 @@ var __x = eval;
                 }
               }// for conditions
             }// if
-            cellElement.innerHTML = self._buildCellHtml(obj, column);
+            cellElement.innerHTML = self._buildCellHtml(obj, column, row, cellElement);
           }// for
         },
       refresh : function(){
@@ -142,11 +169,10 @@ var __x = eval;
           this.refresh();
         }
    });
-    
 
-  $.expr[':'].awesome = function (elem) {
+  $.expr[':'].simpletable = function (elem) {
     // Is this element awesome?
-    return $(elem).text().indexOf('awesome') !== -1;
+    return $(elem).hasClass('simpletable');
   };
 
 })(jQuery);

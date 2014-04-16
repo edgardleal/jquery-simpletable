@@ -20,17 +20,28 @@
       throws(block, [expected], [message])
   */
 
+asyncTest('Column callbak', function(){
+    expect(1);
+    setTimeout(function(){
+        ok(true, 'Timeout was called');
+        start();
+      }, 1000);
+  });
+
   module('jQuery#simpleTable', {
     setup: function() {
       this.elems = $('#simpleTable').simpleTable({
+        'keyField' : 'Code',
+        'editable' : 'true',
+        'data' : [{'Code' : '1', 'Name': 'xxxx'}],
         'columns' : [
           {'width' : 30, 'title': 'Code'},
           {'width' : 60, 'title': 'Name'}
-        
         ]
       });
     }
   });
+
 
   test('is chainable', function() {
     expect(2);
@@ -52,7 +63,14 @@
   test('Check setup body', function(){
       expect(1);
       strictEqual(this.elems.find('tbody').length, 1, 'Body shold be initialized');
-    
+    });
+
+  test('Check editable', function(){
+      expect(2);
+      ok(this.elems, 'elems was created');
+
+      ok(this.elems.find('td').attr('contenteditable'), 
+          'Td element has the contenteditable attribute');
     });
 
   test('Check fields', function(){
