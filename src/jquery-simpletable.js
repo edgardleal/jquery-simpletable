@@ -19,7 +19,11 @@ var __x = eval;
         keyField : null,
         data : void 0,
         url : void 0,
+        // turn table editable
         editable : false,
+        // when call save , or autoSave us true, the edited row will send to server like 
+        // a html form. Ex.: name=X&tel=5555
+        postAsForm : true,
         columns : [],
         table : null,
         border : 1
@@ -54,12 +58,49 @@ var __x = eval;
           }
         }
       },
+      /**
+       * Partial code coped from jQuery api
+       */
+      _serializeRow : function($row){
+          var self = this;
+          var r20 = /%20/g;
+          var result = '{';
+          var list = [];
+          var $td = $row.find('td');
+          if(self.options.postAsForm){
+            $td.each(function(i, ele){
+                var $ele = $(ele),
+                $inputs = $ele.find('input select textarea keygen');
+                if($inputs.length){
+                  list[list.length] = encodeURIComponent($inputs.attr('name') + 
+                    '=' + encodeURIComponent($inputs.val()));
+                }else{
+                  list[list.length] = encodeURIComponent($ele.attr('name')) + 
+                    '=' + encodeURIComponent($ele.text());
+                }
+              });
+            list.push('_id=' + encodeURIComponent($row.attr('id')));
+            return list.join('&').replace(r20, '+');
+          }else{
+            for(var i in self.options.columns){
+              result += 
+                (result==='{'?'':',')+  '"' + 
+                self.options.columns[i].field + 
+                '":"' + $td.get(i).innerText + '"';
+            }
+            result = result + (result==='{'?'':',') + 
+              '"_id" : "' + $row.attr('id') + '"';
+            return result + '}';
+          }
+        },
       save : function($row){
         var self = this;
         if(self.options.url){
-          $.post({
-              url : self.options.url,
-              data : self._serializeRow($row)
+          $.ajax({
+              'type' : 'POST',
+              'dataType' : 'json',
+              'url' : self.options.url,
+              'data' : self._serializeRow($row)
             });
         }
       },
@@ -71,9 +112,10 @@ var __x = eval;
           var self = this;
           var html = '<tr id="' + id + '">';
           var parameters = self.options.editable?'contenteditable="true"':'';
-          for(var i = 1 ; i <= cols; i++){
-            html += '<td ' + parameters + ' class="ui-widget-content"></td>';
-          }
+          self._each(cols, function(i, col){
+              html += '<td name="' + col.field + '" ' + 
+                parameters + ' class="ui-widget-content"></td>';
+            });
           var $row = $(html + '</tr>');
           self.body.append($row);
           $row.hover(
@@ -85,8 +127,8 @@ var __x = eval;
             }).click(function(){
               $(this).children("td").toggleClass("ui-state-highlight");
             });
-            if(self.options.autosave){
-              $row.find('td').change(function(){
+            if(self.options.editable){
+              $row.find('td').blur(function(){
                   $row.modified = true;
                   if(self.options.autosave){
                     self.save($row);
@@ -119,7 +161,7 @@ var __x = eval;
           }
           var row = self.body.find('tr[id=' + id + ']');
           if(!row || row.length < 1){
-            row = self._createRow(self.options.columns.length, id);
+            row = self._createRow(self.options.columns, id);
           }
           var columnIndex = 0;
           var $columns = row.find('td');
@@ -153,12 +195,45 @@ var __x = eval;
             cellElement.innerHTML = self._buildCellHtml(obj, column, row, cellElement);
           }// for
         },
-      refresh : function(){
+      /**
+       *
+       * url -> the url where come the data, if undefined, will be use this.options.url if any informed, will exit 
+       * callback -> any function to be called when the data reader is finished 
+       */
+      refreshremote : function(url, callback){
           var self = this;
-          for(var i in self.options.data){
-            self._refreshRow(self.options.data[i]);
+          var _url = url?url:self.options.url;
+          if(!_url){
+            return this;
+          }else{
+            $.get(_url).success(function(data){
+                for(var i in data){
+                  self._refreshRow(data[i]);
+                }
+                if(callback && typeof callback === 'function'){
+                  callback.call(self, data);
+                }
+              });
           }
         },
+      refresh : function(){
+          var self = this;
+          if(self.options.url){
+            self.refreshremote();
+          }else{
+            for(var i in self.options.data){
+              self._refreshRow(self.options.data[i]);
+            }
+          }
+        },
+      _each : function(list, callBack, end){
+        for(var i in list){
+          callBack.call(this, i, list[i]);
+        }
+        if(end && typeof end === 'function'){
+          end.call(this);
+        }
+      },
       _create : function(){
           var self = this;
           self.head = self.element.find('thead');

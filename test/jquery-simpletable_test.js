@@ -38,21 +38,14 @@ asyncTest('Column callbak', function(){
           {'width' : 30, 'title': 'Code'},
           {'width' : 60, 'title': 'Name'}
         ]
-      });
+      }).simpleTable('refresh');
     }
   });
 
 
-  test('is chainable', function() {
-    expect(2);
-    // Not a bad test to run on collection methods.
-    ok(this.elems, 'elems has initialized');
-    strictEqual(this.elems.simpleTable(), this.elems, 'should be chainable');
-  });
-
   test('Check setup head', function() {
     expect(2);
-    this.elems = $('#simpleTable').simpleTable();
+    //this.elems = $('#simpleTable').simpleTable();
     ok(this.elems.find('thead').length > 0,
      'shold be 1');
 

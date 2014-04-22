@@ -34,6 +34,8 @@
      $(function(){
          $('#simpleTable').simpleTable({
              'editable' : 'true',
+             'autosave' : 'true',
+             'url' : '/ocorrencia',
              'columns' : [
              {'title': 'Code', 'width' : 20},
              {'title': 'Name', 'width' : 200},
@@ -56,7 +58,7 @@
 {'Code' : 3 , 'Name' : 'Silvia da Silva', 'Tel': '0000-0000', 'value': Math.round(Math.random() * 50)},
 {'Code' : 4 , 'Name' : 'Paula Souza', 'Tel': '0000-0000', 'value'    : Math.round(Math.random() * 50)}
              ],
-             'keyField' : 'Code'
+             'keyField' : '_id'
            });
        
        });
@@ -75,16 +77,9 @@
         data[index].value = base + (Math.round(Math.random() * 10) - 5);
     }
 
-     setInterval(function(){
-         change(0); 
-         change(1);  
-         change(2);  
-         change(3);  
-
-         $('#simpleTable').simpleTable('option', 'data', data)
-           .simpleTable('refresh');
-       
-       },3000);
+//     setInterval(function(){
+         $('#simpleTable').simpleTable('refresh');
+  //     },3000);
     </script>
 </body>
 </html>
